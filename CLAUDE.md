@@ -65,19 +65,16 @@ MCFunction('hello', () => {
 | `src/utils/compiler.ts` | Loads playground and calls `compilePack()` |
 | `plugins/get-sandstone-files/` | Loads `.d.ts` files for Monaco intellisense |
 
-### Static Playground Files
+### Runtime Bundles
 
-The `static/playground/` directory contains pre-built bundles:
+Interactive snippets load runtime bundles from unpkg at runtime:
 
-| File | Source | Purpose |
-|------|--------|---------|
-| `main.js` | `sandstone-playground/dist/main.js` | Playground runtime (~15MB) |
-| `sandstone.esm.js` | `sandstone/dist/browser/sandstone.esm.js` | Sandstone bundle (~2MB) |
+| Package | URL | Purpose |
+|---------|-----|---------|
+| `playground` | `https://unpkg.com/@sandstone-mc/playground@latest/dist/main.js` | Compiler runtime |
+| `sandstone` | `https://unpkg.com/sandstone@beta/dist/browser/sandstone.esm.js` | Bundled via playground's configure |
 
-**These files must NOT be processed by any bundler.** The compiler loads them via:
-```ts
-import(/* webpackIgnore: true */ "/playground/main.js")
-```
+The compiler (`compiler.ts`) imports playground from unpkg. The playground loads the sandstone bundle at runtime, defaulting to the `@beta` tag.
 
 ## Plugin: get-sandstone-files
 
@@ -93,18 +90,6 @@ Located at `plugins/get-sandstone-files/index.js`, this plugin loads sandstone t
 The plugin exposes data via `usePluginData('get-sandstone-files')`:
 - `sandstoneFiles`: Array of `[content, fileName]` tuples for Monaco
 - `sandstoneExports`: Array of export names for auto-import detection
-
-## Updating Playground Files
-
-When sandstone or playground changes:
-
-```bash
-# From workspace root after building sandstone and playground:
-cp sandstone/dist/browser/sandstone.esm.js sandstone-documentation/static/playground/
-cp sandstone-playground/dist/main.js sandstone-documentation/static/playground/
-```
-
-The documentation dev server will hot-reload when these files change.
 
 ## Boilerplate Filtering
 

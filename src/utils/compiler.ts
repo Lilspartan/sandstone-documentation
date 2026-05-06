@@ -21,6 +21,9 @@ export async function compileDataPack(
       const nativeImport = new Function('url', 'return import(url)');
       
       lib = nativeImport("https://unpkg.com/@sandstone-mc/playground@latest/dist/main.js") as Promise<typeof import("@sandstone-mc/playground")>;
+      // Configure playground to load sandstone from unpkg
+      const { configure } = await lib;
+      configure({ sandstonePath: "https://unpkg.com/sandstone@beta/dist/browser/sandstone.esm.js" });
     } catch (e) {
       console.error("Failed to load @sandstone-mc/playground:", e);
       throw e;
