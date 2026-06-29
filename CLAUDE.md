@@ -72,9 +72,9 @@ Interactive snippets load runtime bundles from unpkg at runtime:
 | Package | URL | Purpose |
 |---------|-----|---------|
 | `playground` | `https://unpkg.com/@sandstone-mc/playground@latest/dist/main.js` | Compiler runtime |
-| `sandstone` | `https://unpkg.com/sandstone@beta/dist/browser/sandstone.esm.js` | Bundled via playground's configure |
+| `sandstone` | `https://unpkg.com/sandstone/dist/browser/sandstone.esm.js` | Bundled via playground's configure |
 
-The compiler (`compiler.ts`) imports playground from unpkg. The playground loads the sandstone bundle at runtime, defaulting to the `@beta` tag.
+The compiler (`compiler.ts`) imports playground from unpkg. The playground loads the sandstone bundle at runtime.
 
 ## Plugin: get-sandstone-files
 
@@ -82,7 +82,7 @@ Located at `plugins/get-sandstone-files/index.js`, this plugin loads sandstone t
 
 **In development:** Reads from local `../sandstone/dist/` if available.
 
-**In production:** Fetches from unpkg using the `@beta` tag:
+**In production:** Fetches from unpkg:
 - Uses `?meta` endpoint to list all `.d.ts` files
 - Includes `package.json` files for proper module boundary resolution
 - Creates a synthetic root `package.json` with exports field for Monaco

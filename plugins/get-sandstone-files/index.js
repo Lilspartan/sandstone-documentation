@@ -125,7 +125,7 @@ module.exports = function (context) {
       // Fallback to unpkg for types
       if (!usedLocalTypes) {
         // Use unpkg's ?meta endpoint to list all files in dist/
-        const metaRequest = await fetch("https://unpkg.com/sandstone@beta/dist/?meta");
+        const metaRequest = await fetch("https://unpkg.com/sandstone/dist/?meta");
         const meta = await metaRequest.json();
 
         // Extract package version from the response
