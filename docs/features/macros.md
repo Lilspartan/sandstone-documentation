@@ -12,7 +12,7 @@ Sandstone provides a first class experience for using said macros, beyond basic 
 
 ```ts
 MCFunction('macro_test', () => {
-  data.modify.storage('macro_test', 'Test').set.value(NBT({test:'5 10 37'}))
+  data.modify.storage('macro_test', 'Test').set.value({test: '5 10 37'})
   functionCmd(MCFunction('using_macros', () => {
     raw('/tp @s $(test)')
   }), 'with', 'storage', 'macro_test', 'Test')
