@@ -48,12 +48,12 @@ To specify a unit, you must call the corresponding method under the `NBT` object
 - With a single number. It will add the given unit to the number.
 - With an array of numbers. It will add the given unit to all numbers in the array.
 
-For example, to summon an armor stand with `Invisible: 1b` and `Rotation: [90f, 0f]`, you must write:
+For example, to summon an armor stand with `Air: 0s` and `Rotation: [90f, 0f]`, you must write:
 ```ts
 import { NBT } from 'sandstone'
 
 summon('minecraft:armor_stand', rel(0, 0, 0), {
-  Invisible: NBT.byte(1),       // => Invisible: 1b
+  Air: NBT.short(0),
   Rotation: NBT.float([90, 0]), // => Rotation: [90f, 0f]
 })
 ```
@@ -90,10 +90,10 @@ Another syntax exists. It's more compact, easier to read, but has absolutely no 
 import { NBT } from 'sandstone'
 
 summon('minecraft:armor_stand', rel(0, 0, 0), {
-  Invisible: NBT`1b`,       // => Invisible: 1b
+  Air: NBT`1s`,       // => Air: 1s
   Rotation: NBT`[90f, 0f]`, // => Rotation: [90f, 0f]
 }) 
-// => /summon minecraft:armor_stand ~ ~ ~ {Invisible:1b, Rotation:[90f, 0f]}
+// => /summon minecraft:armor_stand ~ ~ ~ {Air:1s, Rotation:[90f, 0f]}
 ```
 
 :::caution
