@@ -112,35 +112,50 @@ module.exports = function (context) {
         }
       }
 
-      // Fallback to unpkg for exports
+      // jsDelivr's data API doesn't accept @latest, so resolve pinned versions
+      // from this repo's package.json (stripping ^ / ~ / >=).
+      const fsV = eval('require')('fs');
+      const pathV = eval('require')('path');
+      const localPkg = JSON.parse(fsV.readFileSync(pathV.resolve(__dirname, '../../package.json'), 'utf-8'));
+      const stripRange = (v) => (v || '').replace(/^[\^~>=< ]+/, '').trim();
+      const sandstoneVer = stripRange(localPkg.dependencies?.sandstone);
+      const playgroundVer = stripRange(localPkg.devDependencies?.['@sandstone-mc/playground']);
+      console.log(`[get-sandstone-files] Pinned versions: sandstone=${sandstoneVer}, playground=${playgroundVer}`);
+
+      // Fallback to jsDelivr for exports
       if (!sandstoneExports) {
         sandstoneExports = JSON.parse(
-          (await (await fetch('https://unpkg.com/@sandstone-mc/playground@latest/dist/exports.js')).text())
+          (await (await fetch(`https://cdn.jsdelivr.net/npm/@sandstone-mc/playground@${playgroundVer}/dist/exports.js`)).text())
             .split(' = ')[1]
             .replace(';', '')
         );
-        console.log(`[get-sandstone-files] Using unpkg playground exports (${sandstoneExports.length} exports)`);
+        console.log(`[get-sandstone-files] Using jsDelivr playground exports (${sandstoneExports.length} exports)`);
       }
 
-      // Fallback to unpkg for types
+      // Fallback to jsDelivr for types
       if (!usedLocalTypes) {
-        // Use unpkg's ?meta endpoint to list all files in dist/
-        const metaRequest = await fetch("https://unpkg.com/sandstone/dist/?meta");
-        const meta = await metaRequest.json();
+        // Use jsDelivr's data API to list all files. It returns a nested tree
+        // rooted at the package, so flatten it to a list of full paths.
+        const treeResponse = await fetch(`https://data.jsdelivr.com/v1/packages/npm/sandstone@${sandstoneVer}`);
+        const treeData = await treeResponse.json();
+        const packageVersion = `sandstone@${sandstoneVer}`;
+        console.log(`[get-sandstone-files] Fetching types from jsDelivr (${packageVersion})`);
 
-        // Extract package version from the response
-        const packageVersion = `sandstone@${meta.version}`;
-        console.log(`[get-sandstone-files] Fetching types from unpkg (${packageVersion})`);
+        const flatten = (entries, prefix = '') => entries.flatMap((e) => {
+          const full = prefix + '/' + e.name;
+          return e.type === 'directory' ? flatten(e.files || [], full) : [full];
+        });
+        const allFiles = flatten(treeData.files);
 
         // Filter for .d.ts files and package.json files
-        const dtsFiles = meta.files.filter(f => f.path.endsWith('.d.ts'));
-        const packageJsonFiles = meta.files.filter(f => f.path.endsWith('package.json'));
+        const dtsFiles = allFiles.filter((f) => f.endsWith('.d.ts'));
+        const packageJsonFiles = allFiles.filter((f) => f.endsWith('package.json'));
 
         // Fetch all .d.ts files
         sandstoneFiles = await Promise.all(
           dtsFiles.map(async (file) => {
-            // file.path is like "/dist/foo/bar.d.ts"
-            const url = `https://unpkg.com/${packageVersion}${file.path}`;
+            // file is like "/dist/foo/bar.d.ts"
+            const url = `https://cdn.jsdelivr.net/npm/${packageVersion}${file}`;
             let source = await (await fetch(url)).text();
             // Transform .js imports to .d.ts for Monaco resolution
             source = source.replace(/from ["']([^"']+)\.js["']/g, 'from "$1.d.ts"');
@@ -149,7 +164,7 @@ module.exports = function (context) {
             source = source.replace(/import\(["']\.["']\)/g, 'import("./index.d.ts")');
 
             // Keep files at their original paths under dist/
-            const name = file.path.replace(/^\/dist\//, '').replace(/\.d\.ts$/, '');
+            const name = file.replace(/^\/dist\//, '').replace(/\.d\.ts$/, '');
 
             return [
               source,
@@ -161,9 +176,9 @@ module.exports = function (context) {
         // Fetch package.json files (like _internal/package.json) for proper module boundaries
         const packageJsonEntries = await Promise.all(
           packageJsonFiles.map(async (file) => {
-            const url = `https://unpkg.com/${packageVersion}${file.path}`;
+            const url = `https://cdn.jsdelivr.net/npm/${packageVersion}${file}`;
             const source = await (await fetch(url)).text();
-            const name = file.path.replace(/^\/dist\//, '');
+            const name = file.replace(/^\/dist\//, '');
             return [source, `file:///node_modules/sandstone/${name}`];
           })
         );
@@ -172,7 +187,7 @@ module.exports = function (context) {
         // Create root package.json with exports field for Monaco module resolution
         const rootPackageJson = JSON.stringify({
           name: 'sandstone',
-          version: meta.version,
+          version: sandstoneVer,
           exports: {
             '.': { types: './exports/index.d.ts' },
             './arguments': { types: './exports/arguments/index.d.ts' },
@@ -185,7 +200,7 @@ module.exports = function (context) {
         }, null, 2);
         sandstoneFiles.push([rootPackageJson, 'file:///node_modules/sandstone/package.json']);
 
-        console.log(`[get-sandstone-files] Using unpkg sandstone types (${sandstoneFiles.length} files, including package.json)`);
+        console.log(`[get-sandstone-files] Using jsDelivr sandstone types (${sandstoneFiles.length} files, including package.json)`);
       }
 
       // Create global declarations by re-exporting from sandstone module
