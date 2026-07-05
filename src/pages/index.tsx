@@ -4,12 +4,18 @@ import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Layout from "@theme/Layout";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import { ReactElement } from "react";
 
-const features = [
+interface Feature {
+  title: string;
+  imageUrl: string;
+  description: ReactElement;
+}
+
+const features: Feature[] = [
   {
     title: "Easy to Use",
     imageUrl: '/img/icons/computer.png',
-    style: styles.featureImage2,
     description: (
       <>
         Sandstone was designed to be easily installed, and used
@@ -20,7 +26,6 @@ const features = [
   {
     title: "Focus on What Matters",
     imageUrl: '/img/icons/dirt.png',
-    style: styles.featureImage1,
     description: (
       <>
         Sandstone lets you focus on your logic, and takes care of the implementation.
@@ -31,7 +36,6 @@ const features = [
   {
     title: "Powered by Typescript",
     imageUrl: '/img/icons/ts.png',
-    style: styles.featureImage3,
     description: (
       <>
         Typescript provides perfect autocompletion, prevents your errors
@@ -41,16 +45,18 @@ const features = [
   },
 ];
 
-function Feature({ imageUrl, title, description, style }) {
+// Feature Card
+function Feature({ imageUrl, title, description }: Feature) {
   return (
-    <div className={clsx('col col--4', styles.feature)}>
-      {imageUrl && (
-        <div className="text--center">
-          <img className={style} src={imageUrl} alt={title} />
-        </div>
-      )}
-      <h3>{title}</h3>
-      <p>{description}</p>
+    <div className = {clsx(styles.panel, styles.feature)}>
+      {/* Feature Icon */}
+      <div className = { styles.featureIconContainer }>
+        <img className = { styles.featureIcon } src = { imageUrl } alt = { title } />
+      </div>
+
+      {/* Text */}
+      <h3 className = { styles.featureTitle }>{ title }</h3>
+      <p className = { styles.featureDescription }>{ description }</p>
     </div>
   );
 }
@@ -62,38 +68,46 @@ function Home() {
     <Layout
       title={`${siteConfig.title} | A Typescript library for Minecraft Datapacks & Resource Packs`}
       description="Sandstone is a Typescript library used to create Minecraft datapacks & resource packs. Featuring perfect autocompletion, while &amp; for loops, shared configurable libraries..."
-      
-      // keywords={['sandstone', 'minecraft', 'datapack', 'typescript', 'easy']}
     >
-      <header className={clsx('hero hero--primary', styles.heroBanner)}>
-        <div className="container">
-          <h1 className="hero__title">{siteConfig.title}</h1>
-          <p className="hero__subtitle">{siteConfig.tagline}</p>
-          <div className={styles.buttons}>
-            <Link
-              className={clsx(
-                'button button--outline button--secondary button--lg',
-                styles.getStarted,
-              )}
-              to={useBaseUrl('docs/')}>
-              Get Started
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main>
-        {features && features.length > 0 && (
-          <section className={styles.features}>
-            <div className="container">
-              <div className="row">
-                {features.map((props, idx) => (
-                  <Feature key={idx} {...props} />
-                ))}
+      <div className = { styles.page }>
+        <header className = { styles.heroBanner }>
+          
+          {/* Hero content grid */}
+          <div className = { styles.heroGrid }>
+
+            {/* Left Content */}
+            <div className = { styles.heroText }>
+              <span className = { styles.badge }>Typescript &rarr; Datapack</span>
+            
+              <h1 className = { styles.heroTitle }>{ siteConfig.title }</h1>
+              <p className = { styles.heroSubtitle }>{ siteConfig.tagline }</p>
+
+              <div className = { styles.buttonGroup }>
+                <Link
+                  className = { clsx(styles.button, styles.buttonPrimary) }
+                  to = { useBaseUrl("docs/") }
+                >
+                  Get Started
+                </Link>
+
+                <Link
+                  className = { clsx(styles.button, styles.buttonSecondary) }
+                  href = "https://github.com/sandstone-mc/sandstone"
+                >
+                  Github
+                </Link>
               </div>
+
+              {/* install command */}
+              <div className={styles.installBox}>
+                <span className={styles.installPrompt}>$</span>
+                <span className={styles.installCommand}>bun i -g sandstone-cli</span>
+              </div>
+
             </div>
-          </section>
-        )}
-      </main>
+          </div>
+        </header>
+      </div>
     </Layout>
   );
 }

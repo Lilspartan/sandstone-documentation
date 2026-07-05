@@ -1,9 +1,123 @@
 /* stylelint-disable docusaurus/copyright-header */
 
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
+.page {
+  --mc-bg: #0f1210;
+  --mc-bg-alt: #161a17;
+  --mc-panel: #2b2b2b;
+  --mc-panel-light: #3d3d3d;
+  --mc-panel-dark: #1a1a1a;
+  --mc-border-light: rgba(255, 255, 255, 0.35);
+  --mc-border-dark: rgba(0, 0, 0, 0.55);
+  --mc-text: #e9e9e0;
+  --mc-text-dim: #a8a89c;
+  --mc-grass: #4c9a2a;
+  --mc-grass-dark: #37701e;
+  --mc-dirt: #7a4b30;
+  --mc-dirt-dark: #56341f;
+  --mc-sandstone: #d9c98a;
+  --mc-sandstone-dark: #a8935a;
+  --mc-diamond: #6fe6e0;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+:root[data-theme='light'] .page {
+  --mc-bg: #dce6d5;
+  --mc-bg-alt: #cddcc4;
+  --mc-panel: #c6c6c6;
+  --mc-panel-light: #e2e2e2;
+  --mc-panel-dark: #8b8b8b;
+  --mc-border-light: rgba(255, 255, 255, 0.7);
+  --mc-border-dark: rgba(0, 0, 0, 0.35);
+  --mc-text: #22281f;
+  --mc-text-dim: #4d5548;
+}
+
+.page {
+  background: var(--mc-bg);
+  color: var(--mc-text);
+  min-height: 100%;
+}
+
+/* Generic Styles */
+
+.panel {
+  background: var(--mc-panel);
+  border: 4px solid transparent;
+}
+
+.badge {
+
+}
+
+.button {
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 14px 28px;
+  color: white;
+  letter-spacing: 1px;
+  font-size: 0.95rem;
+  font-family: var(--ifm-font-family-monospace);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  background: var(--mc-panel-light);
+  box-shadow:
+  inset 2px 2px 0 var(--mc-border-light),
+  inset -3px -3px 0 var(--mc-border-dark),
+  0 4px 0 rgba(0, 0, 0, 0.5);
+  
+  transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.1s ease;
+}
+
+.button:hover {
+  text-decoration: none;
+  filter: brightness(1.15);
+  color: #ffffa0
+}
+
+.button:active {
+  transform: translateY(3px);
+  box-shadow:
+    inset 2px 2px 0 var(--mc-border-light),
+    inset -3px -3px 0 var(--mc-border-dark),
+    0 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.buttonPrimary {
+  background: var(--mc-grass);
+}
+
+.buttonPrimary:hover {
+  background: var(--mc-grass-dark);
+}
+
+.buttonSecondary {
+  background: var(--mc-panel-dark);
+}
+
+/* Feature Cards */
+
+.featureIconContainer {
+
+}
+
+.featureIcon {
+
+}
+
+.featureTitle {
+
+}
+
+.featureDescription {
+  
+}
+
+/* Hero Section */
 
 .heroBanner {
   padding: 4rem 0;
@@ -12,38 +126,28 @@
   overflow: hidden;
 }
 
+.heroGrid {
+  
+}
+
+.heroText {
+
+}
+
+.heroTitle {
+
+}
+
+.heroSubtitle {
+
+}
+
+.buttonGroup {
+
+}
+
 @media screen and (max-width: 966px) {
   .heroBanner {
     padding: 2rem;
   }
-}
-
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.features {
-  display: flex;
-  align-items: center;
-  padding: 2rem 0;
-  width: 100%;
-}
-
-.featureImage1 {
-  height: 200px;
-  width: 200px;
-  padding: 25px;
-}
-
-.featureImage2 {
-  height: 200px;
-  width: 200px;
-}
-
-.featureImage3 {
-  height: 200px;
-  width: 200px;
-  padding: 40px;
 }
